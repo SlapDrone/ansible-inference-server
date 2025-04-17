@@ -1,0 +1,34 @@
+---
+- name: Provision LLM/AI Server Environment
+  hosts: llm_servers # Target hosts defined in 'inventory' file
+  become: yes # Most tasks require root privileges
+  vars_files:
+    - group_vars/all.yml # Load variables from group_vars
+
+  roles:
+    - role: common
+    - role: docker
+    - role: nvidia_drivers
+      # Only run nvidia_drivers role tasks if toolkit configuration is requested
+      when: configure_nvidia_toolkit | default(false)
+    - role: model_download
+      # Dependencies: Git LFS installed (by common role). Network access to Hugging Face.
+      # Run BEFORE ai_tools so models are present when containers start.
+    - role: ai_tools
+      # Dependencies: Docker installed. NVIDIA drivers/toolkit installed/configured if GPU needed. Models downloaded.
+
+  handlers:
+    # These handlers are triggered by 'notify' statements in the roles.
+    - name: Restart Docker
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted
+      become: yes
+      listen: "Restart Docker" # Explicit listener name
+
+    # Handler for vLLM systemd service is REMOVED
+
+    - name: Warn user about group membership
+      ansible.builtin.debug:
+        msg: "User '{{ ansible_user }}' was added to the 'docker' group. You may need to log out and log back in on the target machine ({{ inventory_hostname }}) for this change to take effect in your current SSH session."
+      listen: "Warn user about group membership" # Explicit listener name

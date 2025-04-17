@@ -1,0 +1,72 @@
+---
+# This role now primarily handles NVIDIA Container Toolkit installation and Docker configuration.
+# Driver installation itself is skipped if 'install_nvidia_drivers' is false.
+
+- name: Check if NVIDIA GPU detected (basic check, does not fail playbook)
+  ansible.builtin.shell: lspci | grep -i nvidia
+  register: nvidia_check
+  changed_when: false
+  failed_when: false
+
+# --- Optional: Driver Installation (Only runs if install_nvidia_drivers is true) ---
+- name: Install NVIDIA Drivers via ubuntu-drivers (if requested)
+  ansible.builtin.command: ubuntu-drivers autoinstall
+  become: yes
+  when:
+    - install_nvidia_drivers | default(false)
+    - nvidia_check.rc == 0 # Only if an NVIDIA device seems present
+  changed_when: "'already installed' not in command_result.stdout" # Basic attempt at idempotency
+  register: command_result
+
+# --- Required for GPU Docker Containers: Toolkit Installation & Docker Config (If configure_nvidia_toolkit is true) ---
+- name: Install prerequisites for NVIDIA Container Toolkit repo
+  ansible.builtin.apt:
+    name:
+      - curl # Already installed by common, but ensures it here too
+    state: present
+  become: yes
+  when: configure_nvidia_toolkit | default(false)
+
+- name: Add NVIDIA Container Toolkit GPG Key
+  ansible.builtin.shell: >
+    curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey |
+    gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+  become: yes
+  when: configure_nvidia_toolkit | default(false)
+
+- name: Add NVIDIA Container Toolkit Repository
+  ansible.builtin.shell: >
+    curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list |
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' |
+    tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+  args:
+    creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+  become: yes
+  when: configure_nvidia_toolkit | default(false)
+
+- name: Update apt cache after potentially adding NVIDIA repo
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+  when: configure_nvidia_toolkit | default(false) # Run only if we might have added the repo
+
+- name: Install NVIDIA Container Toolkit package
+  ansible.builtin.apt:
+    name: nvidia-container-toolkit
+    state: present
+  become: yes
+  when: configure_nvidia_toolkit | default(false)
+  notify: Restart Docker # Need to restart docker after toolkit install/config
+
+- name: Configure Docker daemon to use NVIDIA runtime by default
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  become: yes
+  when: configure_nvidia_toolkit | default(false)
+  notify: Restart Docker # Need to restart docker after toolkit install/config

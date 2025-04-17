@@ -1,0 +1,33 @@
+---
+- name: Ensure base model directory exists
+  ansible.builtin.file:
+    path: "{{ models_base_dir }}"
+    state: directory
+    mode: '0755' # Adjust permissions as needed
+    owner: root # Or another user if preferred
+    group: root
+  become: yes
+
+- name: Download/Update specified Hugging Face models using Git and Git LFS
+  ansible.builtin.git:
+    repo: "https://huggingface.co/{{ item.repo_id }}"
+    dest: "{{ models_base_dir }}/{{ item.repo_id | regex_replace('^.*/', '') }}" # Extract last part for dir name
+    version: "{{ item.revision | default('main') }}"
+    clone: yes # Ensure it clones if not present
+    update: yes # Pull updates if repository already exists
+    force: yes # Overwrite local changes (useful if download interrupted, use cautiously)
+    # depth: 1 # Consider uncommenting for faster clones if history isn't needed, BUT MAY BREAK LFS on some repos
+  become: yes # May need sudo depending on models_base_dir ownership/permissions
+  loop: "{{ models_to_download }}"
+  loop_control:
+    label: "{{ item.repo_id }}" # Show which model is being downloaded in logs
+  register: git_clone_status
+  until: git_clone_status is succeeded # Basic retry logic
+  retries: 3
+  delay: 15 # Wait 15s between retries
+  environment: # Ensure git/git-lfs use proxy settings if defined
+    http_proxy: "{{ lookup('env', 'http_proxy') | default(omit) }}"
+    https_proxy: "{{ lookup('env', 'https_proxy') | default(omit) }}"
+    no_proxy: "{{ lookup('env', 'no_proxy') | default(omit) }}"
+  async: 3600 # Allow up to 1 hour per model download (adjust as needed)
+  poll: 30    # Check status every 30 seconds

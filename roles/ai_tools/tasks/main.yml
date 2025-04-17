@@ -1,0 +1,146 @@
+---
+# Task to install vLLM via pip is REMOVED.
+
+- name: Download and run Ollama installation script
+  ansible.builtin.shell: curl -fsSL https://ollama.com/install.sh | sh
+  args:
+    creates: /usr/local/bin/ollama # Makes the task idempotent (don't run if binary exists)
+  become: yes # The script itself likely requires root privileges
+
+- name: Check if Ollama systemd service file exists
+  ansible.builtin.stat:
+    path: /etc/systemd/system/ollama.service
+  register: ollama_service_stat
+
+- name: Ensure Ollama service is enabled and started (if install script created it)
+  ansible.builtin.systemd:
+    name: ollama
+    enabled: yes
+    state: started
+  become: yes
+  when: ollama_service_stat.stat.exists
+
+- name: Pull Infinity Embedding Server Docker image
+  community.docker.docker_image:
+    name: "{{ infinity_image }}"
+    source: pull
+  become: yes # Requires docker group membership or sudo
+
+- name: Create specific directory on HOST for the Infinity model
+  ansible.builtin.file:
+    path: "{{ infinity_model_path_host }}" # e.g., /opt/models/all-MiniLM-L6-v2
+    state: directory
+    mode: '0755'
+    owner: root # Adjust ownership/permissions if needed for non-root container user
+    group: root
+  become: yes
+
+# Use separate tasks for Infinity GPU vs CPU based on toolkit configuration flag
+- name: Run Infinity Embedding Server container (GPU Mode)
+  community.docker.docker_container:
+    name: infinity_server
+    image: "{{ infinity_image }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ infinity_port }}:7997" # Map host port to container port
+    volumes:
+      # Mount the specific model directory from HOST into the CONTAINER
+      - "{{ infinity_model_path_host }}:{{ infinity_model_path_container }}:ro" # Mount read-only
+    gpus: all # Enable GPU access - requires nvidia-container-toolkit & configured Docker
+    command: >
+      --model-name-or-path {{ infinity_model_path_container }}
+      --port 7997
+      --host 0.0.0.0
+  become: yes
+  when: configure_nvidia_toolkit | default(false) # Run only if toolkit/GPU config is enabled
+
+- name: Run Infinity Embedding Server container (CPU Mode)
+  community.docker.docker_container:
+    name: infinity_server
+    image: "{{ infinity_image }}" # Ensure this image tag works on CPU
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ infinity_port }}:7997"
+    volumes:
+      - "{{ infinity_model_path_host }}:{{ infinity_model_path_container }}:ro" # Mount read-only
+    # NO 'gpus: all' here
+    command: >
+      --model-name-or-path {{ infinity_model_path_container }}
+      --port 7997
+      --host 0.0.0.0
+  become: yes
+  when: not (configure_nvidia_toolkit | default(false)) # Run only if toolkit/GPU config is disabled
+
+
+# --- vLLM Docker Container Setup ---
+
+- name: Ensure specific directory on HOST for the vLLM model exists
+  ansible.builtin.file:
+    path: "{{ vllm_model_path_host }}" # e.g., /opt/models/Mistral-7B-Instruct-v0.1
+    state: directory # Should have been created by model download, but ensure it
+    mode: '0755'
+    owner: root
+    group: root
+  become: yes
+
+- name: Pull vLLM OpenAI Docker image
+  community.docker.docker_image:
+    name: "{{ vllm_docker_image }}"
+    source: pull
+  become: yes
+
+# Use separate tasks for vLLM GPU vs CPU based on toolkit configuration flag
+- name: Run vLLM OpenAI container (GPU Mode)
+  community.docker.docker_container:
+    name: vllm_openai_server
+    image: "{{ vllm_docker_image }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ vllm_port }}:8000" # Map HOST port to CONTAINER port (8000 default for vllm openai entrypoint)
+    volumes:
+      # Mount the specific model directory from HOST into the CONTAINER
+      - "{{ vllm_model_path_host }}:{{ vllm_model_path_container }}:ro" # Mount read-only is safer
+      # Optionally mount entire HF cache if needed by some models/features:
+      # - "{{ models_base_dir }}/.cache:/root/.cache:rw" # Be careful with permissions/ownership if rw needed
+    gpus: all # Enable GPU access
+    # Construct the command arguments for the vLLM entrypoint
+    command: >
+      --host 0.0.0.0
+      --port 8000
+      --model {{ vllm_model_path_container }}
+      {% if vllm_tensor_parallel_size is defined %}--tensor-parallel-size {{ vllm_tensor_parallel_size }}{% endif %}
+      {% if vllm_gpu_memory_utilization is defined %}--gpu-memory-utilization {{ vllm_gpu_memory_utilization }}{% endif %}
+      {% if vllm_max_model_len is defined %}--max-model-len {{ vllm_max_model_len }}{% endif %}
+      --dtype auto
+      # Add other vLLM args here if needed
+  become: yes
+  when: configure_nvidia_toolkit | default(false)
+
+- name: Run vLLM OpenAI container (CPU Mode - Warning: Likely very slow!)
+  community.docker.docker_container:
+    name: vllm_openai_server
+    image: "{{ vllm_docker_image }}" # Ensure image supports CPU mode
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "{{ vllm_port }}:8000"
+    volumes:
+      - "{{ vllm_model_path_host }}:{{ vllm_model_path_container }}:ro"
+    # NO 'gpus: all' here
+    command: >
+      --host 0.0.0.0
+      --port 8000
+      --model {{ vllm_model_path_container }}
+      # Remove GPU specific args if they cause errors in CPU mode
+      # {% if vllm_tensor_parallel_size is defined and vllm_tensor_parallel_size == 1 %} # TP size > 1 needs GPU
+      # {% endif %}
+      # {% if vllm_gpu_memory_utilization is defined %} # GPU memory util meaningless
+      # {% endif %}
+      {% if vllm_max_model_len is defined %}--max-model-len {{ vllm_max_model_len }}{% endif %}
+      --dtype auto
+      --device cpu # Explicitly specify CPU device if image supports it
+  become: yes
+  when: not (configure_nvidia_toolkit | default(false))

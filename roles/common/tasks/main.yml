@@ -1,0 +1,28 @@
+---
+- name: Update apt cache (cache valid for 1 hour)
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+- name: Install essential packages
+  ansible.builtin.apt:
+    name:
+      - python3-pip
+      - python3-venv # Good practice, though not strictly used everywhere here
+      - git
+      - git-lfs
+      - wget
+      - curl
+      - ca-certificates # Often needed for downloads/repos
+      - gnupg # Needed for adding repo keys
+      - lsb-release # Needed for detecting OS release (used in docker repo setup)
+    state: present
+  become: yes
+
+- name: Ensure Git LFS is initialized system-wide
+  ansible.builtin.command: git lfs install --system
+  become: yes
+  changed_when: false # This command doesn't reliably indicate change
+  args:
+    warn: false # Suppress warnings if already initialized
