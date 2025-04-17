@@ -41,7 +41,7 @@ This playbook provisions a Linux server (primarily tested on Ubuntu/Debian deriv
 2.  **(One-time) Install Docker collection:** `ansible-galaxy collection install community.docker`
 3.  **(Recommended) Syntax Check:** `ansible-playbook -i inventory playbook.yml --syntax-check`
 4.  **(Recommended) Dry Run:** `ansible-playbook -i inventory playbook.yml --check`
-5.  **Execute Playbook:** `ansible-playbook -i inventory playbook.yml`
+5.  **Execute Playbook:** `ansible-playbook -i inventory.py playbook.yml`
     *   If sudo requires a password: `--ask-become-pass`
 
 **Accessing Services:**
