@@ -1,8 +1,0 @@
-# Define your target server(s) here
-[llm_servers]
-your_server_ip ansible_user=your_ssh_user # Replace with actual IP/hostname and SSH user
-
-[llm_servers:vars]
-# Optional: Uncomment and set if needed. Use ansible-vault for passwords.
-# ansible_ssh_private_key_file=/path/to/your/private/key
-# ansible_become_password=your_sudo_password
