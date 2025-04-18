@@ -18,23 +18,25 @@ models_base_dir: /opt/models
 # List of models to download from Hugging Face
 # Add or remove models as needed. Specify 'repo_id' and optionally 'revision'.
 models_to_download:
+  - repo_id: "mistralai/Mistral-7B-Instruct-v0.1"
+  # vanilla
+  # - repo_id: "THUDM/GLM-4-32B-0414"
+  # - repo_id: "THUDM/GLM-Z1-32B-0414"
+  # - repo_id: "deepcogito/cogito-v1-preview-qwen-32B"
+  # - repo_id: "featherless-ai/Qwerky-72B"
+  # - repo_id: "featherless-ai/Qwerky-QwQ-32B"
+  # - repo_id: "Qwen/Qwen2.5-32B-Instruct-GGUF"
+  # - repo_id: "Qwen/Qwen2.5-72B-Instruct-GGUF"
+  # - repo_id: "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+  # - repo_id: "ai21labs/AI21-Jamba-Mini-1.6"
   # quants
   # dyamic / unsloth
+  # - repo_id: "unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF"
   # bartowski gguf
-  - repo_id: "THUDM/GLM-4-32B-0414"
-  - repo_id: "THUDM/GLM-Z1-32B-0414"
-  - repo_id: "deepcogito/cogito-v1-preview-qwen-32B"
-  - repo_id: "bartowski/deepcogito_cogito-v1-preview-qwen-32B-GGUF"
-  - repo_id: "bartowski/bartowski/nvidia_Llama-3_3-Nemotron-Super-49B-v1-GGUF"
-  - repo_id: "bartowski/Skywork_Skywork-OR1-32B-Preview-GGUF"
-  - repo_id: "bartowski/deepcogito_cogito-v1-preview-llama-70B-GGUF"
-  - repo_id: "unsloth/Llama-4-Scout-17B-16E-Instruct-GGUF"
-  - repo_id: "featherless-ai/Qwerky-72B"
-  - repo_id: "featherless-ai/Qwerky-QwQ-32B"
-  - repo_id: "Qwen/Qwen2.5-32B-Instruct-GGUF"
-  - repo_id: "Qwen/Qwen2.5-72B-Instruct-GGUF"
-  - repo_id: "meta-llama/Llama-4-Scout-17B-16E-Instruct"
-  - repo_id: "ai21labs/AI21-Jamba-Mini-1.6"
+  # - repo_id: "bartowski/deepcogito_cogito-v1-preview-qwen-32B-GGUF"
+  # - repo_id: "bartowski/bartowski/nvidia_Llama-3_3-Nemotron-Super-49B-v1-GGUF"
+  # - repo_id: "bartowski/Skywork_Skywork-OR1-32B-Preview-GGUF"
+  # - repo_id: "bartowski/deepcogito_cogito-v1-preview-llama-70B-GGUF"
     # revision: "main" # Optional: specify a branch, tag, or commit hash
 
 # --- vLLM Settings (Docker Container) ---
