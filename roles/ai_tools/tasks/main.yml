@@ -141,6 +141,6 @@
       # {% endif %}
       {% if vllm_max_model_len is defined %}--max-model-len {{ vllm_max_model_len }}{% endif %}
       --dtype auto
-      --device cpu # Explicitly specify CPU device if image supports it
+      --device cpu
   become: yes
   when: not (configure_nvidia_toolkit | default(false))
