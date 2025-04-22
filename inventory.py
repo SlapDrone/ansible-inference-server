@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# chmod +x inventory.py
 import os
 import json
 import argparse
