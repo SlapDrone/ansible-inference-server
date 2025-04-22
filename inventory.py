@@ -2,6 +2,7 @@
 import os
 import json
 import argparse
+# The file mode has been changed to executable.
 
 def get_inventory_from_env():
     """
