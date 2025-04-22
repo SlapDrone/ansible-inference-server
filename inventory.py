@@ -2,6 +2,20 @@
 import os
 import json
 import argparse
+from pathlib import Path
+import sys
+
+# 1) Load .env from repo root so ansible-playbook sees TARGET_HOST_* automatically
+dotenv = Path(__file__).parent / '.env'
+if dotenv.exists():
+    for line in dotenv.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if '=' in line:
+            key, val = line.split('=', 1)
+            # do not override env vars already set
+            os.environ.setdefault(key.strip(), val.strip())
 # The file mode has been changed to executable.
 
 def get_inventory_from_env():
@@ -18,7 +32,8 @@ def get_inventory_from_env():
     if not host_name:
         raise ValueError("Set TARGET_HOST_IP or TARGET_HOST_ALIAS to your host (e.g. ‘pt’).")
     if not ssh_user:
-        print("Warning: Environment variable TARGET_SSH_USER not set, using default.")
+        # send warnings to stderr so we don’t break JSON output
+        print("Warning: Environment variable TARGET_SSH_USER not set, using default.", file=sys.stderr)
         # Or raise ValueError("Environment variable TARGET_SSH_USER is not set.")
 
     inventory = {
