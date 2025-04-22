@@ -9,23 +9,24 @@ def get_inventory_from_env():
     TARGET_HOST_IP: The IP address or hostname of the target server.
     TARGET_SSH_USER: The SSH username for the target server.
     """
-    host_ip = os.environ.get('TARGET_HOST_IP')
+    # allow pointing at a real IP/hostname *or* an SSH‑config alias
+    host_name = os.environ.get('TARGET_HOST_IP') or os.environ.get('TARGET_HOST_ALIAS')
     ssh_user = os.environ.get('TARGET_SSH_USER')
 
-    if not host_ip:
-        raise ValueError("Environment variable TARGET_HOST_IP is not set.")
+    if not host_name:
+        raise ValueError("Set TARGET_HOST_IP or TARGET_HOST_ALIAS to your host (e.g. ‘pt’).")
     if not ssh_user:
         print("Warning: Environment variable TARGET_SSH_USER not set, using default.")
         # Or raise ValueError("Environment variable TARGET_SSH_USER is not set.")
 
     inventory = {
         "llm_servers": {
-            "hosts": [host_ip],
+            "hosts": [host_name],
             "vars": {} # Add group-level vars here if needed
         },
         "_meta": {
             "hostvars": {
-                host_ip: {
+                host_name: {
                     # ansible_host defaults to the host key (host_ip)
                     # Only add ansible_user if it's set
                 }
@@ -34,7 +35,7 @@ def get_inventory_from_env():
     }
 
     if ssh_user:
-        inventory["_meta"]["hostvars"][host_ip]["ansible_user"] = ssh_user
+        inventory["_meta"]["hostvars"][host_name]["ansible_user"] = ssh_user
         # Optionally add other vars like private key file if needed from env vars
         # key_file = os.environ.get('TARGET_SSH_KEY')
         # if key_file:
