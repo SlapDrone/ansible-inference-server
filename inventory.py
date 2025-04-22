@@ -65,3 +65,5 @@ if __name__ == "__main__":
         print(json.dumps({}))
     else:
         # Default case if no arguments are passed (e.g., manual testing)
+        inv = get_inventory_from_env()
+        print(json.dumps(inv, indent=4))
