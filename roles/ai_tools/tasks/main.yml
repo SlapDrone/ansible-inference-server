@@ -115,7 +115,7 @@
       {% if vllm_gpu_memory_utilization is defined %}--gpu-memory-utilization {{ vllm_gpu_memory_utilization }}{% endif %}
       {% if vllm_max_model_len is defined %}--max-model-len {{ vllm_max_model_len }}{% endif %}
       --dtype auto
-      # Add other vLLM args here if needed
+      --device cpu
   become: yes
   when: configure_nvidia_toolkit | default(false)
 
