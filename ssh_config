@@ -5,9 +5,6 @@ Host UbVM
   ProxyJump acmegw
   HostName ub18-vdi-XYZ
  
-Host pt
-  ProxyJump acmegw
-  HostName 192.168.9.16
  
 Host UbVM, acmegw, slurm, pt
   User be7000032635

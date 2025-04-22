@@ -1,0 +1,5 @@
+# Environment variables template for Ansible inventory
+# Copy this file to .env and fill in the values
+
+TARGET_HOST_IP=
+TARGET_SSH_USER=
