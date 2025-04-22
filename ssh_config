@@ -1,0 +1,26 @@
+HashKnownHosts no
+ 
+ 
+Host UbVM
+  ProxyJump acmegw
+  HostName ub18-vdi-XYZ
+ 
+Host pt
+  ProxyJump acmegw
+  HostName 192.168.9.16
+ 
+Host UbVM, acmegw, slurm, pt
+  User be7000032635
+  ForwardAgent yes
+  IdentityFile ~/.ssh/id_ed25519-acme
+ 
+Host acmegw
+  User be7000032635
+  HostName linux.acmetel.be
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519-acme
+ 
+Host slurm
+  User be7000032635
+  ProxyJump acmegw
+  Hostname sl-login-01.acmetel.be
