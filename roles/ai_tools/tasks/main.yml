@@ -119,7 +119,7 @@
   become: yes
   when: configure_nvidia_toolkit | default(false)
 
-- name: Run vLLM OpenAI container (CPU Mode - Warning: Likely very slow!)
+- name: "Run vLLM OpenAI container (CPU Mode - Warning: Likely very slow!)"
   community.docker.docker_container:
     name: vllm_openai_server
     image: "{{ vllm_docker_image }}" # Ensure image supports CPU mode
