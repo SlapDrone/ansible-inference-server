@@ -6,7 +6,7 @@
     mode: '0755' # Adjust permissions as needed
     owner: root # Or another user if preferred
     group: root
-  become: yes
+  become: no
 
 - name: Download/Update specified Hugging Face models using Git and Git LFS
   ansible.builtin.git:
@@ -17,7 +17,7 @@
     update: yes # Pull updates if repository already exists
     force: yes # Overwrite local changes (useful if download interrupted, use cautiously)
     # depth: 1 # Consider uncommenting for faster clones if history isn't needed, BUT MAY BREAK LFS on some repos
-  become: yes # May need sudo depending on models_base_dir ownership/permissions
+  become: no # May need sudo depending on models_base_dir ownership/permissions
   loop: "{{ models_to_download }}"
   loop_control:
     label: "{{ item.repo_id }}" # Show which model is being downloaded in logs

@@ -5,7 +5,7 @@
   ansible.builtin.shell: curl -fsSL https://ollama.com/install.sh | sh
   args:
     creates: /usr/local/bin/ollama # Makes the task idempotent (don't run if binary exists)
-  become: yes # The script itself likely requires root privileges
+  become: no # The script itself likely requires root privileges
 
 - name: Check if Ollama systemd service file exists
   ansible.builtin.stat:
@@ -17,14 +17,14 @@
     name: ollama
     enabled: yes
     state: started
-  become: yes
+  become: no
   when: ollama_service_stat.stat.exists
 
 - name: Pull Infinity Embedding Server Docker image
   community.docker.docker_image:
     name: "{{ infinity_image }}"
     source: pull
-  become: yes # Requires docker group membership or sudo
+  become: no # Requires docker group membership or sudo
 
 - name: Create specific directory on HOST for the Infinity model
   ansible.builtin.file:
@@ -33,7 +33,7 @@
     mode: '0755'
     owner: root # Adjust ownership/permissions if needed for non-root container user
     group: root
-  become: yes
+  become: no
 
 # Use separate tasks for Infinity GPU vs CPU based on toolkit configuration flag
 - name: Run Infinity Embedding Server container (GPU Mode)
@@ -52,7 +52,7 @@
       --model-name-or-path {{ infinity_model_path_container }}
       --port 7997
       --host 0.0.0.0
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false) # Run only if toolkit/GPU config is enabled
 
 - name: Run Infinity Embedding Server container (CPU Mode)
@@ -70,7 +70,7 @@
       --model-name-or-path {{ infinity_model_path_container }}
       --port 7997
       --host 0.0.0.0
-  become: yes
+  become: no
   when: not (configure_nvidia_toolkit | default(false)) # Run only if toolkit/GPU config is disabled
 
 
@@ -83,13 +83,13 @@
     mode: '0755'
     owner: root
     group: root
-  become: yes
+  become: no
 
 - name: Pull vLLM OpenAI Docker image
   community.docker.docker_image:
     name: "{{ vllm_docker_image }}"
     source: pull
-  become: yes
+  become: no
 
 # Use separate tasks for vLLM GPU vs CPU based on toolkit configuration flag
 - name: Run vLLM OpenAI container (GPU Mode)
@@ -116,7 +116,7 @@
       {% if vllm_max_model_len is defined %}--max-model-len {{ vllm_max_model_len }}{% endif %}
       --dtype auto
       --device cpu
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false)
 
 - name: "Run vLLM OpenAI container (CPU Mode - Warning: Likely very slow!)"
@@ -142,5 +142,5 @@
       {% if vllm_max_model_len is defined %}--max-model-len {{ vllm_max_model_len }}{% endif %}
       --dtype auto
       --device cpu
-  become: yes
+  become: no
   when: not (configure_nvidia_toolkit | default(false))

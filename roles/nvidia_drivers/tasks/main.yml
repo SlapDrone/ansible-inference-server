@@ -11,7 +11,7 @@
 # --- Optional: Driver Installation (Only runs if install_nvidia_drivers is true) ---
 - name: Install NVIDIA Drivers via ubuntu-drivers (if requested)
   ansible.builtin.command: ubuntu-drivers autoinstall
-  become: yes
+  become: no
   when:
     - install_nvidia_drivers | default(false)
     - nvidia_check.rc == 0 # Only if an NVIDIA device seems present
@@ -24,7 +24,7 @@
     name:
       - curl # Already installed by common, but ensures it here too
     state: present
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false)
 
 - name: Add NVIDIA Container Toolkit GPG Key
@@ -33,7 +33,7 @@
     gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
   args:
     creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false)
 
 - name: Add NVIDIA Container Toolkit Repository
@@ -43,20 +43,20 @@
     tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
   args:
     creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false)
 
 - name: Update apt cache after potentially adding NVIDIA repo
   ansible.builtin.apt:
     update_cache: yes
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false) # Run only if we might have added the repo
 
 - name: Install NVIDIA Container Toolkit package
   ansible.builtin.apt:
     name: nvidia-container-toolkit
     state: present
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false)
   notify: Restart Docker # Need to restart docker after toolkit install/config
 
@@ -67,6 +67,6 @@
     owner: root
     group: root
     mode: '0644'
-  become: yes
+  become: no
   when: configure_nvidia_toolkit | default(false)
   notify: Restart Docker # Need to restart docker after toolkit install/config

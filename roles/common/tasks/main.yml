@@ -3,7 +3,7 @@
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
-  become: yes
+  become: no
 
 - name: Install essential packages
   ansible.builtin.apt:
@@ -18,11 +18,11 @@
       - gnupg # Needed for adding repo keys
       - lsb-release # Needed for detecting OS release (used in docker repo setup)
     state: present
-  become: yes
+  become: no
 
 - name: Ensure Git LFS is initialized system-wide
   ansible.builtin.command: git lfs install --system
-  become: yes
+  become: no
   changed_when: false # This command doesn't reliably indicate change
   args:
     warn: false # Suppress warnings if already initialized

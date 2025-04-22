@@ -1,7 +1,7 @@
 ---
 - name: Provision LLM/AI Server Environment
   hosts: llm_servers # Target hosts defined in 'inventory' file
-  become: yes # Most tasks require root privileges
+  become: no # Most tasks require root privileges
   vars_files:
     - group_vars/all.yml # Load variables from group_vars
 
@@ -23,7 +23,7 @@
       ansible.builtin.systemd:
         name: docker
         state: restarted
-      become: yes
+      become: no
       listen: "Restart Docker" # Explicit listener name
 
     # Handler for vLLM systemd service is REMOVED
