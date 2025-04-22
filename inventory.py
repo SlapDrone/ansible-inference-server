@@ -62,11 +62,3 @@ if __name__ == "__main__":
         print(json.dumps({}))
     else:
         # Default case if no arguments are passed (e.g., manual testing)
-         try:
-            inv = get_inventory_from_env()
-            print(json.dumps(inv, indent=4))
-         except ValueError as e:
-             print(json.dumps({"_meta": {"hostvars": {}}}, indent=4)) # Output empty on error
-             import sys
-             print(f"Error: {e}", file=sys.stderr)
-             sys.exit(1)
