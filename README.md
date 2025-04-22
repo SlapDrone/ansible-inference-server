@@ -39,8 +39,8 @@ This playbook provisions a Linux server (primarily tested on Ubuntu/Debian deriv
 
 1.  Navigate to the root directory of this project (`ansible_llm_setup/`).
 2.  **(One-time) Install Docker collection:** `ansible-galaxy collection install community.docker`
-3.  **(Recommended) Syntax Check:** `ansible-playbook -i inventory playbook.yml --syntax-check`
-4.  **(Recommended) Dry Run:** `ansible-playbook -i inventory playbook.yml --check`
+3.  **(Recommended) Syntax Check:** `ansible-playbook -i inventory.py playbook.yml --syntax-check`
+4.  **(Recommended) Dry Run:** `ansible-playbook -i inventory.py playbook.yml --check`
 5.  **Execute Playbook:** `ansible-playbook -i inventory.py playbook.yml`
     *   If sudo requires a password: `--ask-become-pass`
 
