@@ -3,6 +3,8 @@
 ansible_python_interpreter: /usr/bin/python3 # Adjust if python3 is elsewhere
 
 # --- NVIDIA Settings ---
+# Tell Ansible to call sudo with “-n” (never prompt)
+ansible_become_flags: "-n"
 # Set to false since drivers are assumed to be pre-installed.
 # Set to true ONLY if you want Ansible to ATTEMPT driver installation (e.g. 'ubuntu-drivers autoinstall').
 install_nvidia_drivers: false

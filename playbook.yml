@@ -2,6 +2,7 @@
 - name: Provision LLM/AI Server Environment
   hosts: llm_servers # Target hosts defined in 'inventory' file
   become: yes # Most tasks require root privileges
+  become_flags: "-n"
   vars_files:
     - group_vars/all.yml # Load variables from group_vars
 
