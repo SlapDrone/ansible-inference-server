@@ -7,11 +7,10 @@
   become: yes
 
 - name: Add Docker official GPG key
-  ansible.builtin.get_url:
-    url: https://download.docker.com/linux/ubuntu/gpg # Adjust for Debian if needed
-    dest: /etc/apt/keyrings/docker.gpg
-    mode: '0644'
-    force: yes # Overwrite if exists to ensure it's current
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    keyring: /etc/apt/keyrings/docker.gpg
+    state: present
   become: yes
 
 - name: Add Docker repository
@@ -20,13 +19,10 @@
       deb [arch={{ ansible_architecture | replace('x86_64','amd64') }}
       signed-by=/etc/apt/keyrings/docker.gpg]
       https://download.docker.com/linux/ubuntu
-      {{ ansible_lsb.codename }} stable
+      jammy stable
     state: present
-    filename: docker # Explicitly name the sources list file
+    filename: docker
   become: yes
-  vars:
-    # Ensure lsb_release facts are gathered
-    ansible_distribution_release: "{{ ansible_lsb.codename }}"
 
 - name: Update apt cache after adding Docker repo
   ansible.builtin.apt:
