@@ -24,5 +24,3 @@
   ansible.builtin.command: git lfs install --system
   become: yes
   changed_when: false # This command doesn't reliably indicate change
-  args:
-    warn: false # Suppress warnings if already initialized
