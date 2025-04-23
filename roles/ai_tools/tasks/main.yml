@@ -12,11 +12,11 @@
     path: /etc/systemd/system/ollama.service
   register: ollama_service_stat
 
-- name: Ensure Ollama service is enabled and started (if install script created it)
+- name: Configure Ollama service state
   ansible.builtin.systemd:
     name: ollama
-    enabled: yes
-    state: started
+    enabled: "{{ start_services | default(false) }}"
+    state: "{{ 'started' if start_services | default(false) else 'stopped' }}"
   become: yes
   when: ollama_service_stat.stat.exists
 
@@ -40,7 +40,7 @@
   community.docker.docker_container:
     name: infinity_server
     image: "{{ infinity_image }}"
-    state: started
+    state: "{{ 'started' if start_services | default(false) else 'present' }}"
     restart_policy: unless-stopped
     ports:
       - "{{ infinity_port }}:7997" # Map host port to container port
@@ -59,7 +59,7 @@
   community.docker.docker_container:
     name: infinity_server
     image: "{{ infinity_image }}" # Ensure this image tag works on CPU
-    state: started
+    state: "{{ 'started' if start_services | default(false) else 'present' }}"
     restart_policy: unless-stopped
     ports:
       - "{{ infinity_port }}:7997"
@@ -95,7 +95,7 @@
   community.docker.docker_container:
     name: vllm_openai_server
     image: "{{ vllm_docker_image }}"
-    state: started
+    state: "{{ 'started' if start_services | default(false) else 'present' }}"
     restart_policy: unless-stopped
     ports:
       - "{{ vllm_port }}:8000"
@@ -126,7 +126,7 @@
   community.docker.docker_container:
     name: vllm_openai_server
     image: "{{ vllm_docker_image }}" # Ensure image supports CPU mode
-    state: started
+    state: "{{ 'started' if start_services | default(false) else 'present' }}"
     restart_policy: unless-stopped
     ports:
       - "{{ vllm_port }}:8000"
