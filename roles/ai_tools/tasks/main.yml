@@ -47,7 +47,7 @@
     volumes:
       # Mount the specific model directory from HOST into the CONTAINER
       - "{{ infinity_model_path_host }}:{{ infinity_model_path_container }}:ro" # Mount read-only
-    gpus: all # Enable GPU access - requires nvidia-container-toolkit & configured Docker
+    # gpus: all # Enable GPU access - requires nvidia-container-toolkit & configured Docker
     command: >
       --model-name-or-path {{ infinity_model_path_container }}
       --port 7997
