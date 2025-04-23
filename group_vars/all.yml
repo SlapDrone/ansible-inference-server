@@ -56,7 +56,7 @@ vllm_calculate_kv_scales: true
 
 # --- Infinity Settings ---
 # Check Docker Hub for appropriate image tags (e.g., specific cuda versions)
-infinity_image: "michaelfeil/infinity:latest"
+infinity_image: "michaelf34/infinity:latest"
 infinity_port: 7997 # Port EXPOSED on the HOST
 # REPO_ID of the embedding model Infinity should serve (must be in 'models_to_download')
 infinity_active_model_repo_id: "sentence-transformers/all-MiniLM-L6-v2"
