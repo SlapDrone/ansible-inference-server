@@ -41,7 +41,11 @@ This playbook provisions a Linux server (primarily tested on Ubuntu/Debian deriv
 2.  **(One-time) Install Docker collection:** `ansible-galaxy collection install community.docker`
 3.  **(Recommended) Syntax Check:** `ansible-playbook -i inventory.py playbook.yml --syntax-check`
 4.  **(Recommended) Dry Run:** `ansible-playbook -i inventory.py playbook.yml --check`
-5.  **Execute Playbook:** `ansible-playbook -i inventory.py playbook.yml`
+5.  **Set Environment Variable**:
+    ```bash
+    export HF_TOKEN="your_huggingface_token_here"
+    ```
+6.  **Execute Playbook:** `ansible-playbook -i inventory.py playbook.yml`
     *   If sudo requires a password: `--ask-become-pass`
 
 **Accessing Services:**
@@ -65,3 +69,4 @@ After the playbook successfully completes:
 *   Model downloads can take a long time.
 *   Ensure firewall rules allow access to the configured ports.
 *   For production, consider pinning image versions, non-root users inside containers (if images support it), and enhanced monitoring.
+*   The HF_TOKEN environment variable must be set when running the playbook to allow vLLM to download models

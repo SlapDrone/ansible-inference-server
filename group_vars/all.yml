@@ -49,7 +49,6 @@ vllm_kv_cache_dtype: "fp8"  # or "auto", "fp16", etc.
 vllm_load_format: "auto"
 vllm_calculate_kv_scales: true
 # vllm_quantization: "awq"  # Uncomment if using quantized models
-hf_token: "your_huggingface_token_here"  # Set this in production!
 # Optional vLLM runtime arguments (passed to the container command)
 # vllm_tensor_parallel_size: 1 # Number of GPUs for tensor parallelism
 # vllm_gpu_memory_utilization: 0.90 # Fraction of GPU memory to use
