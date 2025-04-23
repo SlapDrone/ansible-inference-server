@@ -12,9 +12,6 @@
     - role: nvidia_drivers
       # Only run nvidia_drivers role tasks if toolkit configuration is requested
       when: configure_nvidia_toolkit | default(false)
-    - role: model_download
-      # Dependencies: Git LFS installed (by common role). Network access to Hugging Face.
-      # Run BEFORE ai_tools so models are present when containers start.
     - role: ai_tools
       # Dependencies: Docker installed. NVIDIA drivers/toolkit installed/configured if GPU needed. Models downloaded.
 

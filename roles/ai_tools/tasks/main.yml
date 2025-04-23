@@ -76,10 +76,10 @@
 
 # --- vLLM Docker Container Setup ---
 
-- name: Ensure specific directory on HOST for the vLLM model exists
+- name: Create Hugging Face cache directory
   ansible.builtin.file:
-    path: "{{ vllm_model_path_host }}" # e.g., /opt/models/Mistral-7B-Instruct-v0.1
-    state: directory # Should have been created by model download, but ensure it
+    path: "{{ models_base_dir }}/.cache/huggingface"
+    state: directory
     mode: '0755'
     owner: root
     group: root
@@ -91,7 +91,6 @@
     source: pull
   become: yes
 
-# Use separate tasks for vLLM GPU vs CPU based on toolkit configuration flag
 - name: Run vLLM OpenAI container (GPU Mode)
   community.docker.docker_container:
     name: vllm_openai_server
@@ -99,23 +98,27 @@
     state: started
     restart_policy: unless-stopped
     ports:
-      - "{{ vllm_port }}:8000" # Map HOST port to CONTAINER port (8000 default for vllm openai entrypoint)
+      - "{{ vllm_port }}:8000"
     volumes:
-      # Mount the specific model directory from HOST into the CONTAINER
-      - "{{ vllm_model_path_host }}:{{ vllm_model_path_container }}:ro" # Mount read-only is safer
-      # Optionally mount entire HF cache if needed by some models/features:
-      # - "{{ models_base_dir }}/.cache:/root/.cache:rw" # Be careful with permissions/ownership if rw needed
-    gpus: all # Enable GPU access
-    # Construct the command arguments for the vLLM entrypoint
+      - "{{ models_base_dir }}/.cache/huggingface:/root/.cache/huggingface"
+    gpus: all
+    environment:
+      HUGGING_FACE_HUB_TOKEN: "{{ hf_token }}"
+      NVIDIA_VISIBLE_DEVICES: all
+      VLLM_ATTENTION_BACKEND: "FLASHINFER"
     command: >
       --host 0.0.0.0
       --port 8000
-      --model {{ vllm_model_path_container }}
+      --model {{ vllm_model }}
       {% if vllm_tensor_parallel_size is defined %}--tensor-parallel-size {{ vllm_tensor_parallel_size }}{% endif %}
       {% if vllm_gpu_memory_utilization is defined %}--gpu-memory-utilization {{ vllm_gpu_memory_utilization }}{% endif %}
       {% if vllm_max_model_len is defined %}--max-model-len {{ vllm_max_model_len }}{% endif %}
       --dtype auto
-      --device cpu
+      --use-v2-block-manager
+      --kv-cache-dtype {{ vllm_kv_cache_dtype | default('auto') }}
+      {% if vllm_calculate_kv_scales | default(false) %}--calculate-kv-scales{% endif %}
+      --load-format {{ vllm_load_format | default('auto') }}
+      {% if vllm_quantization is defined %}--quantization {{ vllm_quantization }}{% endif %}
   become: yes
   when: configure_nvidia_toolkit | default(false)
 

@@ -44,12 +44,12 @@ models_to_download:
 # --- vLLM Settings (Docker Container) ---
 vllm_docker_image: "vllm/vllm-openai:latest" # Official image. Pin version (e.g., :v0.4.0.post1) for stability
 vllm_port: 8000 # Port EXPOSED on the HOST
-# REPO_ID of the model vLLM should serve initially (must be in 'models_to_download')
-vllm_active_model_repo_id: "mistralai/Mistral-7B-Instruct-v0.1"
-# Automatically derive the HOST path where the model is downloaded
-vllm_model_path_host: "{{ models_base_dir }}/{{ vllm_active_model_repo_id | regex_replace('^.*/', '') }}"
-# Define the path INSIDE the container where the model will be mounted
-vllm_model_path_container: "/models/{{ vllm_active_model_repo_id | regex_replace('^.*/', '') }}"
+vllm_model: "mistralai/Mistral-7B-Instruct-v0.1"  # HF model ID
+vllm_kv_cache_dtype: "fp8"  # or "auto", "fp16", etc.
+vllm_load_format: "auto"
+vllm_calculate_kv_scales: true
+# vllm_quantization: "awq"  # Uncomment if using quantized models
+hf_token: "your_huggingface_token_here"  # Set this in production!
 # Optional vLLM runtime arguments (passed to the container command)
 # vllm_tensor_parallel_size: 1 # Number of GPUs for tensor parallelism
 # vllm_gpu_memory_utilization: 0.90 # Fraction of GPU memory to use
