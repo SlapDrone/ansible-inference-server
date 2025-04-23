@@ -1,0 +1,5 @@
+[project]
+exclude = [
+    "README.md",
+    "*.md"
+]
