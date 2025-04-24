@@ -70,3 +70,6 @@
   become: yes
   when: configure_nvidia_toolkit | default(false)
   notify: Restart Docker # Need to restart docker after toolkit install/config
+
+- name: Flush handlers to ensure Docker restart happens now
+  meta: flush_handlers
