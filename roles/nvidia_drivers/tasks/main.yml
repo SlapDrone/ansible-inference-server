@@ -13,12 +13,12 @@
   ansible.builtin.command: ubuntu-drivers autoinstall
   become: yes
   when:
-    - install_nvidia_drivers | default(false)
+    - install_cuda_toolkit | default(true)
     - nvidia_check.rc == 0 # Only if an NVIDIA device seems present
   changed_when: "'already installed' not in command_result.stdout" # Basic attempt at idempotency
   register: command_result
 
-# --- CUDA Toolkit Installation (If install_nvidia_drivers is true) ---
+# --- CUDA Toolkit Installation (If install_cuda_toolkit is true) ---
 - name: Download CUDA repository pin file
   ansible.builtin.get_url:
     url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-ubuntu2404.pin
@@ -26,7 +26,7 @@
     mode: '0644'
   become: yes
   when: 
-    - install_nvidia_drivers | default(false)
+    - install_cuda_toolkit | default(true)
     - nvidia_check.rc == 0
 
 - name: Download CUDA repository package
@@ -36,7 +36,7 @@
     mode: '0644'
   become: yes
   when: 
-    - install_nvidia_drivers | default(false)
+    - install_cuda_toolkit | default(true)
     - nvidia_check.rc == 0
 
 - name: Install CUDA repository package
@@ -45,7 +45,7 @@
     creates: /var/lib/dpkg/info/cuda-repo-ubuntu2404-12-8-local.list # Check if package installed
   become: yes
   when: 
-    - install_nvidia_drivers | default(false)
+    - install_cuda_toolkit | default(true)
     - nvidia_check.rc == 0
   register: cuda_repo_install
   changed_when: "'installing' in cuda_repo_install.stdout"
@@ -56,7 +56,7 @@
     creates: /usr/share/keyrings/cuda-archive-keyring.gpg
   become: yes
   when: 
-    - install_nvidia_drivers | default(false)
+    - install_cuda_toolkit | default(true)
     - nvidia_check.rc == 0
 
 - name: Update apt cache after adding CUDA repository
