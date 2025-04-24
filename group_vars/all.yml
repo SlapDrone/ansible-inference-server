@@ -68,7 +68,9 @@ infinity_model_path_container: "/models/{{ infinity_active_model_repo_id | regex
 
 
 # --- Service Control ---
-start_services: false  # Set to true to automatically start ollama/infinity/vllm
+start_vllm: true  # Start vLLM service by default
+start_infinity: false  # Set to true to start Infinity Embedding Server
+start_ollama: false  # Set to true to start Ollama service
 
 # --- Ollama Settings ---
 # Ollama usually runs on port 11434 and manages its own models/service after installation.
