@@ -40,7 +40,7 @@
     - nvidia_check.rc == 0
 
 - name: Install CUDA repository package
-  ansible.builtin.dpkg:
+  dpkg:
     deb: /tmp/cuda-repo.deb
   become: yes
   when: 
