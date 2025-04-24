@@ -102,7 +102,7 @@
     volumes:
       - "{{ models_base_dir }}/.cache/huggingface:/root/.cache/huggingface"
     # gpus: all
-    environment:
+    env:
       HUGGING_FACE_HUB_TOKEN: "{{ lookup('env', 'HF_TOKEN') | default('', true) }}"
       NVIDIA_VISIBLE_DEVICES: all
       VLLM_ATTENTION_BACKEND: "FLASHINFER"
