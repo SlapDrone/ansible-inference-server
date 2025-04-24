@@ -12,7 +12,7 @@
     - role: nvidia_drivers
       # Only run nvidia_drivers role tasks if toolkit configuration is requested
       when: configure_nvidia_toolkit | default(false)
-    - role: ai_tools
+    - { role: ai_tools, tags: ['ai_tools'] }
       # Dependencies: Docker installed. NVIDIA drivers/toolkit installed/configured if GPU needed. Models downloaded.
 
   handlers:
