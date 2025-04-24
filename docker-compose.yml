@@ -1,0 +1,60 @@
+# for fp8 kv cache: by setting environment variable  VLLM_ATTENTION_BACKEND=FLASHINFER
+# also: need to figure out vllm cli equivalent of calculate_kv_scales=True
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ipc: host
+    ports:
+      - "8000:8000"
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - VLLM_ATTENTION_BACKEND=FLASHINFER
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+      - ./config.yaml:/config.yaml
+    # --dtype float16
+    # --trust-remote-code true
+    #
+    #  --speculative_model=${DRAFT_MODEL}
+    #  --num_speculative_tokens=5
+    ##32768
+    command: >
+      --model=${MODEL}
+      --host=0.0.0.0
+      --port=8000
+      --max-model-len=${MAX_MODEL_LEN}
+      --gpu-memory-utilization=${GPU_MEM_UTIL}
+      --use-v2-block-manager
+      --kv-cache-dtype=${KV_CACHE_DTYPE}
+      --calculate-kv-scales
+      --load-format=${LOAD_FORMAT}
+      --quantization=${QUANTIZATION}
+
+  infinity:
+    image: michaelf34/infinity:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      # - INFINITY_MODEL_ID=BAAI/bge-large-en-v1.5
+      - INFINITY_MODEL_ID=infgrad/jasper_en_vision_language_v1
+      - INFINITY_PORT=8080
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    ports:
+      - "8080:8080"
+    command: >
+      v2 --model-id ${INFINITY_MODEL_ID} --port ${INFINITY_PORT}
