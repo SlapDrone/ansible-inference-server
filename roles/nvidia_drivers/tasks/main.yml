@@ -25,7 +25,7 @@
       - curl # Already installed by common, but ensures it here too
     state: present
   become: yes
-  when: configure_nvidia_toolkit | default(false)
+  when: configure_nvidia_toolkit | default(true)
 
 - name: Add NVIDIA Container Toolkit GPG Key
   ansible.builtin.shell: >
@@ -34,7 +34,7 @@
   args:
     creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
   become: yes
-  when: configure_nvidia_toolkit | default(false)
+  when: configure_nvidia_toolkit | default(true)
 
 - name: Add NVIDIA Container Toolkit Repository
   ansible.builtin.shell: >
@@ -44,13 +44,13 @@
   args:
     creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
   become: yes
-  when: configure_nvidia_toolkit | default(false)
+  when: configure_nvidia_toolkit | default(true)
 
 - name: Update apt cache after potentially adding NVIDIA repo
   ansible.builtin.apt:
     update_cache: yes
   become: yes
-  when: configure_nvidia_toolkit | default(false) # Run only if we might have added the repo
+  when: configure_nvidia_toolkit | default(true) # Run only if we might have added the repo
 
 - name: Install NVIDIA Container Toolkit package
   ansible.builtin.apt:
