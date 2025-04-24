@@ -57,7 +57,7 @@
     name: nvidia-container-toolkit
     state: present
   become: yes
-  when: configure_nvidia_toolkit | default(false)
+  when: configure_nvidia_toolkit | default(true)
   notify: Restart Docker # Need to restart docker after toolkit install/config
 
 - name: Configure Docker daemon to use NVIDIA runtime by default
