@@ -21,6 +21,7 @@ models_base_dir: /opt/models
 # Add or remove models as needed. Specify 'repo_id' and optionally 'revision'.
 models_to_download:
   - repo_id: "mistralai/Mistral-7B-Instruct-v0.1"
+  - repo_id: "Qwen/Qwen2.5-72B-Instruct-AWQ"
   # vanilla
   # - repo_id: "THUDM/GLM-4-32B-0414"
   # - repo_id: "THUDM/GLM-Z1-32B-0414"
