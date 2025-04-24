@@ -101,7 +101,7 @@
       - "{{ vllm_port }}:8000"
     volumes:
       - "{{ models_base_dir }}/.cache/huggingface:/root/.cache/huggingface"
-    gpus: all
+    # gpus: all
     environment:
       HUGGING_FACE_HUB_TOKEN: "{{ lookup('env', 'HF_TOKEN') | default('', true) }}"
       NVIDIA_VISIBLE_DEVICES: all
