@@ -8,7 +8,7 @@ VLLM_IMAGE=${VLLM_IMAGE:-"vllm/vllm-openai:latest"}
 MODEL=${MODEL:-"Qwen/Qwen2.5-72B-Instruct-AWQ"}
 KV_CACHE_DTYPE=${KV_CACHE_DTYPE:-"fp8"}
 LOAD_FORMAT=${LOAD_FORMAT:-"auto"}
-QUANTIZATION=${QUANTIZATION:-"awq"}
+# QUANTIZATION=${QUANTIZATION:-"awq"}
 GPU_MEM_UTIL=${GPU_MEM_UTIL:-0.90}
 MAX_MODEL_LEN=${MAX_MODEL_LEN:-32000}
 HOST_PORT=${VLLM_PORT:-8000}
@@ -21,6 +21,8 @@ if [ -z "$HF_TOKEN" ]; then
 fi
 
 # Construct Docker command
+# 
+# --quantization ${QUANTIZATION} \
 CMD="docker run --gpus all -d --rm \
   --ipc=host \
   -p ${HOST_PORT}:8000 \
@@ -37,7 +39,6 @@ CMD="docker run --gpus all -d --rm \
   --gpu-memory-utilization ${GPU_MEM_UTIL} \
   --max-model-len ${MAX_MODEL_LEN} \
   --use-v2-block-manager \
-  --quantization ${QUANTIZATION} \
   --calculate-kv-scales"
 
 echo "Starting vLLM container with command:"
