@@ -40,12 +40,15 @@
     - nvidia_check.rc == 0
 
 - name: Install CUDA repository package
-  dpkg:
-    deb: /tmp/cuda-repo.deb
+  ansible.builtin.shell:
+    cmd: dpkg -i /tmp/cuda-repo.deb
+    creates: /var/lib/dpkg/info/cuda-repo-ubuntu2404-12-8-local.list # Check if package installed
   become: yes
   when: 
     - install_nvidia_drivers | default(false)
     - nvidia_check.rc == 0
+  register: cuda_repo_install
+  changed_when: "'installing' in cuda_repo_install.stdout"
 
 - name: Copy CUDA repository keyring
   ansible.builtin.shell:
