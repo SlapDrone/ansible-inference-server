@@ -45,7 +45,7 @@ models_to_download:
 # --- vLLM Settings (Docker Container) ---
 vllm_docker_image: "vllm/vllm-openai:latest" # Official image. Pin version (e.g., :v0.4.0.post1) for stability
 vllm_port: 8000 # Port EXPOSED on the HOST
-vllm_model: "mistralai/Mistral-7B-Instruct-v0.1"  # HF model ID
+vllm_model: "Qwen/Qwen2.5-72B-Instruct-AWQ"  # HF model ID
 vllm_kv_cache_dtype: "fp8"  # or "auto", "fp16", etc.
 vllm_load_format: "auto"
 vllm_calculate_kv_scales: true
