@@ -49,11 +49,12 @@ vllm_model: "Qwen/Qwen2.5-72B-Instruct-AWQ"  # HF model ID
 vllm_kv_cache_dtype: "fp8"  # or "auto", "fp16", etc.
 vllm_load_format: "auto"
 vllm_calculate_kv_scales: true
-# vllm_quantization: "awq"  # Uncomment if using quantized models
+vllm_quantization: "awq"  # Uncomment if using quantized models
 # Optional vLLM runtime arguments (passed to the container command)
 # vllm_tensor_parallel_size: 1 # Number of GPUs for tensor parallelism
-# vllm_gpu_memory_utilization: 0.90 # Fraction of GPU memory to use
-# vllm_max_model_len: 4096 # Max sequence length
+vllm_gpu_memory_utilization: 0.90 # Fraction of GPU memory to use
+vllm_max_model_len: 32000
+# Max sequence length
 
 # --- Infinity Settings ---
 # Check Docker Hub for appropriate image tags (e.g., specific cuda versions)

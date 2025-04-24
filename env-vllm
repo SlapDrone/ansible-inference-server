@@ -1,0 +1,25 @@
+# vllm | llm inference server
+# -- MODEL STUFF ---------------------------------------------
+MODEL=Qwen/Qwen2.5-72B-Instruct-AWQ
+MAX_MODEL_LEN=32000
+GPU_MEM_UTIL=0.95
+DRAFT_MODEL=Qwen/Qwen2.5-3B-Instruct-AWQ
+# UNSLOTH dynamic 4-bit model settings
+# LOAD_FORMAT=bitsandbytes
+# QUANTIZATION=bitsandbytes
+# -- KV CACHE STUFF -------------------------------------------
+# KV_CACHE_DTYPE=fp4
+KV_CACHE_DTYPE=fp8
+CALCULATE_KV_SCALES=1
+VLLM_ATTENTION_BACKEND=FLASHINFER
+# -- END KV CACHE STUFF ---------------------------------------
+#  -- INFINITY STUFF (embedding inference server) -------------
+INFINITY_MODEL_ID=dunzhang/stella_en_1.5B_v5
+INFINITY_PORT=8080
+# -- END INFINITY STUFF ---------------------------------------
+# -- API KEYS -------------------------------------------------
+VLLM_CLIENT_KEY="-"
+# -- END API KEYS ---------------------------------------------
+
+
+
