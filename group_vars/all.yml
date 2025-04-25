@@ -7,7 +7,7 @@ ansible_python_interpreter: /usr/bin/python3 # Adjust if python3 is elsewhere
 ansible_become_flags: "-n"
 # Set to false since drivers are assumed to be pre-installed.
 # Set to true ONLY if you want Ansible to ATTEMPT driver installation (e.g. 'ubuntu-drivers autoinstall').
-install_nvidia_drivers: false
+install_nvidia_drivers: true
 
 # Set to true to install CUDA Toolkit 12.8 (requires NVIDIA GPU)
 install_cuda_toolkit: true
