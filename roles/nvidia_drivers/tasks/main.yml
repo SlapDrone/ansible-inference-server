@@ -18,6 +18,15 @@
   changed_when: "'already installed' not in command_result.stdout" # Basic attempt at idempotency
   register: command_result
 
+- name: Install nvidia utils 
+  ansible.builtin.apt:
+    name: nvidia-utils-570-server
+    state: present
+  become: yes
+  when: 
+    - install_nvidia_drivers | default(true)
+    - nvidia_check.rc == 0
+
 # --- CUDA Toolkit Installation (If install_cuda_toolkit is true) ---
 - name: Download CUDA repository pin file
   ansible.builtin.get_url:
