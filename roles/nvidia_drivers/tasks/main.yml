@@ -31,7 +31,8 @@
 - name: Download runfile
   ansible.builtin.shell: |
     wget https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run 
-  # creates: ~/cuda_12.8.1_570.124.06_linux.run
+  args:
+    creates: cuda_12.8.1_570.124.06_linux.run  # Checks if file exists in current directory
   become: yes
   when: 
     - install_cuda_toolkit | default(true)
@@ -40,14 +41,14 @@
 
 - name: Install CUDA repository package
   ansible.builtin.shell: |
-    sh cuda_12.8.1_570.124.06_linux.run
-  # creates: /var/lib/dpkg/info/cuda-repo-ubuntu2404-12-8-local.list # Check if package installed
+    sh cuda_12.8.1_570.124.06_linux.run --silent --toolkit --override
+  args:
+    creates: /usr/local/cuda-12.8  # Checks if CUDA toolkit installation exists
   become: yes
   when: 
     - install_cuda_toolkit | default(true)
     - nvidia_check.rc == 0
   register: cuda_repo_install
-  # changed_when: "'installing' in cuda_repo_install.stdout"
 
 # - name: Download CUDA repository pin file
 #   ansible.builtin.get_url:
