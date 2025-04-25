@@ -31,7 +31,7 @@
 - name: Install CUDA repository package
   ansible.builtin.shell:
     cmd: wget https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run \
-         sh cuda_12.8.1_570.124.06_linux.run
+         && sh cuda_12.8.1_570.124.06_linux.run
     # creates: /var/lib/dpkg/info/cuda-repo-ubuntu2404-12-8-local.list # Check if package installed
   become: yes
   when: 
