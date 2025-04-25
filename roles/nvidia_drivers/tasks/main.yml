@@ -10,10 +10,10 @@
 
 # --- Optional: Driver Installation (Only runs if install_nvidia_drivers is true) ---
 - name: Install NVIDIA Drivers via ubuntu-drivers (if requested)
-  ansible.builtin.command: ubuntu-drivers autoinstall
+  ansible.builtin.command: ubuntu-drivers install nvidia-driver-570-server
   become: yes
   when:
-    - install_cuda_toolkit | default(true)
+    - install_nvidia_drivers | default(true)
     - nvidia_check.rc == 0 # Only if an NVIDIA device seems present
   changed_when: "'already installed' not in command_result.stdout" # Basic attempt at idempotency
   register: command_result
