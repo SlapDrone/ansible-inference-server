@@ -17,6 +17,12 @@
 
   handlers:
     # These handlers are triggered by 'notify' statements in the roles.
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: yes
+      become: yes
+      listen: "Reload systemd"
+
     - name: Restart Docker
       ansible.builtin.systemd:
         name: docker

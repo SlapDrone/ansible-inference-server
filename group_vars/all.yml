@@ -77,7 +77,15 @@ start_infinity: false  # Set to true to start Infinity Embedding Server
 start_ollama: false  # Set to true to start Ollama service
 
 # --- Ollama Settings ---
-# Ollama usually runs on port 11434 and manages its own models/service after installation.
+# Directory where Ollama will store models (must be writable by ollama user)
+ollama_models_dir: "{{ models_base_dir }}/.ollama/models"
+
+# List of models to download with Ollama
+ollama_models_to_download:
+  - name: "llama2"
+  - name: "mistral"
+    version: "7b"  # Optional version tag
+  - name: "codellama"
 
 # --- Docker Settings ---
 # Docker Compose V2 (plugin) is usually installed via apt now.
