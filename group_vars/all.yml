@@ -82,10 +82,19 @@ ollama_models_dir: "{{ models_base_dir }}/.ollama/models"
 
 # List of models to download with Ollama
 ollama_models_to_download:
-  - name: "llama2"
-  - name: "mistral"
-    version: "7b"  # Optional version tag
-  - name: "codellama"
+  - name: "hf.co/unsloth/Qwen3-4B-GGUF:Qwen3-4B-UD-Q6_K_XL.gguf"
+  - name: "hf.co/unsloth/Qwen3-4B-128K-GGUF:Qwen3-4B-128K-UD-Q6_K_XL.gguf"
+  - name: "hf.co/unsloth/Qwen3-14B-128K-GGUF:Qwen3-14B-128K-UD-Q6_K_XL.gguf"
+  - name: "hf.co/unsloth/Qwen3-30B-A3B-128K-GGUF:Qwen3-30B-A3B-128K-UD-Q4_K_XL.gguf"
+  - name: "hf.co/unsloth/Qwen3-32B-128K-GGUF:Qwen3-32B-128K-UD-Q6_K_XL.gguf"
+  - name: "hf.co/unsloth/Qwen3-8B-128K-GGUF:Qwen3-8B-128K-UD-Q6_K_XL.gguf"
+  - name: "qwen2.5:7b"
+  - name: "hf.co/unsloth/Qwen3-14B-GGUF:Qwen3-14B-UD-Q4_K_XL.gguf"
+  - name: "hf.co/unsloth/Qwen3-32B-GGUF:Qwen3-32B-UD-Q4_K_XL.gguf"
+  - name: "hf.co/unsloth/Qwen3-30B-A3B-GGUF:Qwen3-30B-A3B-UD-Q4_K_XL.gguf"
+  - name: "command-r7b:latest"
+  - name: "qwen2.5:3b"
+  - name: "qwen2.5:14b"
 
 # --- Docker Settings ---
 # Docker Compose V2 (plugin) is usually installed via apt now.
